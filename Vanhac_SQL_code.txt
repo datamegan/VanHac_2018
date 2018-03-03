@@ -1,0 +1,354 @@
+
+———————————————
+
+CREATE TABLE public."olympic_results"
+(
+    "Year" integer,
+    "Country" varchar,
+    "Wins" integer,
+    "Losses" integer,
+    "Medal" varchar
+)
+
+
+
+	INSERT INTO public."olympic_results"
+	("Year", "Country", "Wins", "Losses", "Medal")
+	VALUES 
+	(2018, 'Canada', 4, 1, 'Silver'),
+	(2018, 'USA', 4, 1, 'Gold'),
+	(2018, 'Finland', 3, 3, 'Bronze'),
+	(2014, 'Canada', 5, 0, 'Gold'),
+	(2014, 'USA', 3, 2, 'Silver'),
+	(2014, 'Switzerland', 2, 4, 'Bronze')
+
+
+———————————————
+
+CREATE TABLE public."womens_hockey"
+(
+"season" varchar,
+"league" varchar,
+"trans" real,
+"yrAdj" real,
+"firstname" varchar,
+"lastname" varchar,
+"pos" varchar,
+"team" varchar,
+"GP" integer,
+"G" integer,
+"A" integer,
+"PTS" integer,
+"GC" real,
+"WCe" real,
+"PIM" integer,
+"plusminus" integer,
+"shots" integer,
+"PPG" integer,
+"PPA" integer,
+"SHG" integer,
+"SHA" integer,
+"ENG" integer,
+"SOShot" integer,
+"SOG" integer,
+"AGP" integer,
+"AG" integer,
+"AA" integer,
+"APTS" integer,
+"AGC" real,
+"TmGP" integer,
+"TmG" integer,
+"TmA" integer,
+"ExpPts" real,
+"ExpGC" real,
+"PAX" real,
+"GCAX" real
+)
+ 
+ ———————————————
+ 
+SELECT * 
+FROM public."womens_hockey"
+
+SELECT "Country"
+, "Year"
+, "Medal"
+FROM public."olympic_results"
+
+———————————————
+
+SELECT "Country"
+, "Year"
+, "Medal"
+FROM public."olympic_results"
+WHERE "Country" = 'Canada'
+
+SELECT "season" 
+, "league"
+, "firstname"
+, "lastname" 
+, "pos" 
+, "team" 
+, "GP" 
+, "G"
+, "A" 
+, "PTS" 
+, "PIM" 
+, "plusminus" 
+, "shots" 
+FROM public."womens_hockey"
+WHERE "GP" >= 5
+
+———————————————
+
+SELECT DISTINCT "pos"
+FROM public."womens_hockey"
+
+SELECT DISTINCT "league"
+, "season"
+FROM public."womens_hockey"
+
+———————————————
+
+SELECT * 
+FROM public."womens_hockey"
+WHERE "league" = 'NWHL' OR "league"= 'CWHL'
+
+SELECT * 
+FROM public."womens_hockey"
+WHERE "league" = 'NWHL' AND "season"= '2015'
+
+SELECT * 
+FROM public."womens_hockey"
+WHERE "pos" in ('F', 'RW', 'LW', 'C')
+
+SELECT * 
+FROM public."womens_hockey"
+WHERE "pos" NOT 'G'
+
+———————————————
+
+SELECT "season" 
+, "league"
+, "firstname"
+, "lastname" 
+, "firstname" ||"_"|| "lastname" as "fullname"
+, "pos" 
+, "team" 
+, "GP" 
+, "G"
+, "A" 
+, "PTS" 
+, "PIM" 
+, "plusminus" 
+, "shots" 
+INTO public."whockey"
+FROM public."womens_hockey"
+
+———————————————
+
+select "season"
+, "fullname"
+, "team"
+, "PTS"
+from public."whockey"
+order by "PTS" desc
+limit 100
+
+
+SELECT "season"
+, "league"
+, "team"
+, "fullname"
+, "plusminus"
+from public."whockey"
+order by "plusminus" asc
+limit 100
+
+———————————————
+
+ORDER BY 
+
+SELECT "fullname"
+, "pos"
+, "league"
+, "team"
+, "GP"
+, "G"
+, "A"
+, "PIM"
+FROM public."whockey"
+ORDER BY "PTS" desc
+
+SELECT "fullname"
+, "pos"
+, "league"
+, "team"
+, "GP"
+, "G"
+, "A"
+, "PIM"
+FROM public."whockey"
+ORDER BY "PTS" asc
+
+———————————————
+
+SELECT  count("fullname") as "count_players"
+FROM public."whockey"
+
+
+SELECT count(*) as "count_total"
+, count("pos") as "count_positions"
+FROM public."whockey"
+
+———————————————
+
+SELECT COUNT(distinct "fullname")
+FROM public."whockey"
+
+
+SELECT COUNT(*)
+FROM (SELECT distinct "fullname",  "team" FROM public."whockey") AS "NEW_TABLE"
+
+———————————————
+
+SELECT 
+“league”
+, COUNT(distinct “team”) as “count_teams”
+FROM public."whockey"
+GROUP BY “league”
+
+
+SELECT 
+“team”
+, “league”
+, “season”
+, COUNT(distinct “fullname”) as “count_players”
+FROM public.”hockey”
+GROUP BY “team”, “league”, “season”
+ORDER BY “team”, “league”, “season”
+
+———————————————
+
+SELECT min("plusminus")
+, max(“plusminus”)
+FROM public."whockey"
+
+SELECT 
+“league”
+, min("plusminus")
+, max(“plusminus”)
+FROM public."whockey"
+GROUP BY “league”
+
+———————————————
+
+SELECT "fullname"
+, "team"
+, SUM("G")
+FROM public."whockey"
+GROUP BY "fullname", "team"
+ORDER BY SUM("G") desc
+
+
+SELECT SUM(“G”) as total_goals
+FROM public."whockey"
+
+———————————————
+
+CREATING NEW VARIABLES
+
+*cast to change types
+
+SELECT "fullname"
+, "team"
+, CAST(SUM("G") as FLOAT)/SUM("GP")  as "Goals per Game Ave"
+FROM public."whockey"
+GROUP BY "fullname", "team"
+ORDER BY SUM("G") desc
+
+———————————————
+STRING FUNCTIONS 
+
+SELECT
+"firstname"||'_'||"lastname"||'_'||"season" as "player_year"
+FROM public."whockey"
+
+SELECT DISTINCT
+substring("team" from 1 for 2)
+FROM public."whockey"
+
+———————————————
+
+SELECT * 
+FROM public."whockey"
+WHERE "firstname" LIKE 'Meg%'
+
+SELECT count(distinct "lastname")
+FROM public."whockey"
+WHERE "lastname" LIKE 'Mac%'
+
+SELECT count(distinct "fullname")
+FROM public."whockey"
+WHERE "lastname" LIKE '%Mac%'
+
+SELECT count(distinct "fullname")
+FROM public."whockey"
+WHERE "lastname" LIKE '%e'
+
+
+
+———————————————
+
+SELECT DISTINCT
+"team"
+, "season"
+, "firstname"
+, case when "G" >= 10 then 1 else 0 end as "over_10_goals_flag"
+FROM public."whockey"
+
+
+SELECT "team"
+, "season"
+, "league"
+, "GP"
+, case when "GP" > 30 then 'lots'
+    when "GP" between 20 and 30 then 'some'
+    else 'a few' end as "game_counts"
+FROM public."whockey"
+
+———————————————
+
+SELECT * 
+INTO public."whockey_2014”
+FROM public."whockey"
+WHERE "season" = '2014’
+
+SELECT * 
+INTO public."whockey_2015"
+FROM public."whockey"
+WHERE "season" = '2015'
+
+
+———————————————
+
+SELECT * 
+FROM public."whockey_2014"
+
+UNION 
+
+SELECT * 
+FROM public."whockey_2015"
+
+———————————————
+
+SELECT a."fullname"
+, a."team"
+, a."G" as "2014_goals"
+, b."G" as "2015_goals"
+FROM public."whockey_2015" a
+JOIN public."whockey_2014" b 
+ON a."fullname" = b."fullname" AND a."team" = b."team"
+
+———————————————
+
